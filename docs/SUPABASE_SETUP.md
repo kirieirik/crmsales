@@ -30,7 +30,7 @@ The service-role key is not required for the current app. Leave `SUPABASE_SERVIC
 
 ### Dashboard SQL Editor
 
-For the first setup, run `0001_crm_foundation.sql`, `0002_lead_conversion.sql`, and then `0003_team_memberships.sql` from **SQL Editor > New query**. The first migration creates the tables, indexes, constraints, RLS policies, and Auth trigger. The second adds atomic lead conversion. The third makes invited users join the inviter's existing organization.
+For the first setup, run `0001_crm_foundation.sql`, `0002_lead_conversion.sql`, `0003_team_memberships.sql`, and then `0004_fix_team_auth_trigger.sql` from **SQL Editor > New query**. The first migration creates the tables, indexes, constraints, RLS policies, and Auth trigger. The second adds atomic lead conversion. The third makes invited users join the inviter's existing organization. The fourth fixes enum handling during Auth user creation.
 
 ### Supabase CLI
 

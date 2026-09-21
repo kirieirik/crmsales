@@ -2,7 +2,7 @@
 
 ## Current migration
 
-`supabase/migrations/0001_crm_foundation.sql` is the initial schema. `0002_lead_conversion.sql` adds conversion links and the atomic conversion function. `0003_team_memberships.sql` updates Auth onboarding so invited users join an existing organization. Apply migrations through the Supabase CLI or SQL editor in order; do not create production tables manually in the dashboard.
+`supabase/migrations/0001_crm_foundation.sql` is the initial schema. `0002_lead_conversion.sql` adds conversion links and the atomic conversion function. `0003_team_memberships.sql` updates Auth onboarding so invited users join an existing organization. `0004_fix_team_auth_trigger.sql` fixes enum handling during Auth user creation. Apply migrations through the Supabase CLI or SQL editor in order; do not create production tables manually in the dashboard.
 
 ## Tables
 
