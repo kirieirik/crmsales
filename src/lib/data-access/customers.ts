@@ -31,6 +31,31 @@ export type CustomerListItem = {
   created_at: string;
 };
 
+export type ContactListItem = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  job_title: string | null;
+  email: string | null;
+  phone: string | null;
+  mobile: string | null;
+  is_primary: boolean;
+};
+
+export type CustomerDetail = CustomerListItem & {
+  organization_number: string | null;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  contacts: ContactListItem[];
+};
+
+export type ContactFormState = {
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+  success?: boolean;
+};
+
 export async function listCustomers(): Promise<CustomerListItem[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -43,6 +68,22 @@ export async function listCustomers(): Promise<CustomerListItem[]> {
   }
 
   return (data ?? []) as CustomerListItem[];
+}
+
+export async function getCustomerDetail(customerId: string): Promise<CustomerDetail | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, company_name, organization_number, city, industry, phone, email, notes, customer_status, customer_type, potential_value, created_at, contacts(id, first_name, last_name, job_title, email, phone, mobile, is_primary)")
+    .eq("id", customerId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  return {
+    ...data,
+    contacts: (data.contacts ?? []) as ContactListItem[],
+  } as CustomerDetail;
 }
 
 export async function createCustomer(input: unknown): Promise<CustomerFormState> {
@@ -90,4 +131,40 @@ export async function createCustomer(input: unknown): Promise<CustomerFormState>
   }
 
   return { success: true };
+}
+
+const contactFormSchema = z.object({
+  firstName: z.string().trim().min(1, "Skriv inn fornavn."),
+  lastName: z.string().trim().min(1, "Skriv inn etternavn."),
+  jobTitle: z.string().trim().max(100).optional(),
+  email: z.string().trim().email("Skriv inn en gyldig e-postadresse.").optional().or(z.literal("")),
+  phone: z.string().trim().max(32).optional(),
+  mobile: z.string().trim().max(32).optional(),
+  isPrimary: z.coerce.boolean().optional(),
+});
+
+export async function createContact(customerId: string, input: unknown): Promise<ContactFormState> {
+  const parsed = contactFormSchema.safeParse(input);
+  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
+
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Du må være logget inn for å legge til en kontakt." };
+
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("organization_id").eq("id", user.id).single();
+  if (profileError || !profile) return { error: "Brukerprofilen din mangler en organisasjonstilknytning." };
+
+  const { error } = await supabase.from("contacts").insert({
+    organization_id: profile.organization_id,
+    customer_id: customerId,
+    first_name: parsed.data.firstName,
+    last_name: parsed.data.lastName,
+    job_title: parsed.data.jobTitle || null,
+    email: parsed.data.email || null,
+    phone: parsed.data.phone || null,
+    mobile: parsed.data.mobile || null,
+    is_primary: parsed.data.isPrimary ?? false,
+  });
+
+  return error ? { error: "Kontakten kunne ikke opprettes. Prøv igjen." } : { success: true };
 }

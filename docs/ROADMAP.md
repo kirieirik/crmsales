@@ -7,7 +7,8 @@
 - [ ] Authentication and protected shell
 - [ ] Dashboard
 - [x] Customer list and creation
-- [ ] Customer detail and contacts
+- [x] Customer detail and contacts
+- [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
 - [ ] Opportunities and pipeline
 - [ ] Activities and timeline
