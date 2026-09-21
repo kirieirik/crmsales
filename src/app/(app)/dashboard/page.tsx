@@ -1,46 +1,21 @@
+import Link from "next/link";
 import { Activity, ArrowUpRight, CircleDollarSign, Users, UserRoundPlus } from "lucide-react";
 
-import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getDashboardData } from "@/lib/data-access/dashboard";
 
-const metrics = [
-  { label: "Dagens aktiviteter", value: "0", detail: "Ingen planlagt ennå", icon: Activity },
-  { label: "Nye leads", value: "0", detail: "Siste 7 dager", icon: UserRoundPlus },
-  { label: "Pipeline", value: "0 kr", detail: "Åpne muligheter", icon: CircleDollarSign },
-  { label: "Aktive kunder", value: "0", detail: "Ingen data koblet", icon: Users },
-];
+const money = (value: number) => new Intl.NumberFormat("nb-NO", { style: "currency", currency: "NOK", maximumFractionDigits: 0 }).format(value);
 
 export default async function DashboardPage() {
-  let displayName = "Anders";
+  let data;
+  let loadError = false;
+  try { data = await getDashboardData(); } catch { loadError = true; data = { displayName: "der", activities: [], newLeads: 0, activeCustomers: 0, opportunities: [], pipelineValue: 0, weightedPipeline: 0 }; }
 
-  if (isSupabaseConfigured()) {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const metrics = [
+    { label: "Dagens aktiviteter", value: String(data.activities.length), detail: data.activities.length ? "Krever oppmerksomhet i dag" : "Ingen planlagt ennå", icon: Activity },
+    { label: "Nye leads", value: String(data.newLeads), detail: "Siste 7 dager", icon: UserRoundPlus },
+    { label: "Pipeline", value: money(data.pipelineValue), detail: `Vektet ${money(data.weightedPipeline)}`, icon: CircleDollarSign },
+    { label: "Aktive kunder", value: String(data.activeCustomers), detail: "Kunder med aktiv status", icon: Users },
+  ];
 
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      displayName = profile?.full_name?.split(" ")[0] ?? user.email?.split("@")[0] ?? displayName;
-    }
-  }
-
-  return (
-    <div className="mx-auto max-w-7xl">
-      <div className="flex flex-col justify-between gap-4 border-b border-[#d6dfda] pb-6 sm:flex-row sm:items-end">
-        <div><p className="text-sm font-medium text-[#c45c3d]">Oversikt</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">God morgen, {displayName}</h1><p className="mt-2 text-sm text-[#54766a]">Her er det viktigste for salgsdagen din.</p></div>
-        <button className="flex h-10 items-center justify-center gap-2 bg-[#c45c3d] px-4 text-sm font-semibold text-white transition hover:bg-[#a94730]" type="button"><ArrowUpRight size={16} />Ny aktivitet</button>
-      </div>
-      <section className="grid gap-4 py-7 sm:grid-cols-2 xl:grid-cols-4">
-        {metrics.map(({ label, value, detail, icon: Icon }) => <article className="border border-[#d6dfda] bg-white p-5" key={label}><div className="flex items-center justify-between"><p className="text-sm text-[#54766a]">{label}</p><Icon className="text-[#c45c3d]" size={18} strokeWidth={1.8} /></div><p className="mt-5 text-3xl font-semibold tracking-tight">{value}</p><p className="mt-2 text-xs text-[#7b968b]">{detail}</p></article>)}
-      </section>
-      <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-        <article className="border border-[#d6dfda] bg-white"><div className="border-b border-[#e8eeeb] px-6 py-5"><h2 className="font-semibold">Dagens aktiviteter</h2><p className="mt-1 text-sm text-[#54766a]">Oppgaver og oppfølginger som krever oppmerksomhet.</p></div><div className="flex min-h-64 items-center justify-center px-6 text-center"><div><Activity className="mx-auto text-[#b9ccc4]" size={28} strokeWidth={1.5} /><p className="mt-4 text-sm font-medium">Ingen aktiviteter i dag</p><p className="mt-1 text-sm text-[#7b968b]">Opprett en aktivitet for å holde neste steg synlig.</p></div></div></article>
-        <article className="border border-[#d6dfda] bg-white"><div className="border-b border-[#e8eeeb] px-6 py-5"><h2 className="font-semibold">Pipeline</h2><p className="mt-1 text-sm text-[#54766a]">Fordeling etter salgsfase.</p></div><div className="flex min-h-64 items-center justify-center px-6 text-center"><div><CircleDollarSign className="mx-auto text-[#b9ccc4]" size={28} strokeWidth={1.5} /><p className="mt-4 text-sm font-medium">Pipeline er tom</p><p className="mt-1 text-sm text-[#7b968b]">Muligheter vises her når de er opprettet.</p></div></div></article>
-      </section>
-    </div>
-  );
+  return <div className="mx-auto max-w-7xl"><div className="flex flex-col justify-between gap-4 border-b border-[#d6dfda] pb-6 sm:flex-row sm:items-end"><div><p className="text-sm font-medium text-[#c45c3d]">Oversikt</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">God morgen, {data.displayName}</h1><p className="mt-2 text-sm text-[#54766a]">Her er det viktigste for salgsdagen din.</p></div><Link className="flex h-10 items-center justify-center gap-2 bg-[#c45c3d] px-4 text-sm font-semibold text-white transition hover:bg-[#a94730]" href="/activities#ny-aktivitet"><ArrowUpRight size={16} />Ny aktivitet</Link></div>{loadError ? <p className="mt-5 text-sm text-[#a63e2a]" role="alert">Dashboarddata kunne ikke hentes akkurat nå.</p> : null}<section className="grid gap-4 py-7 sm:grid-cols-2 xl:grid-cols-4">{metrics.map(({ label, value, detail, icon: Icon }) => <article className="border border-[#d6dfda] bg-white p-5" key={label}><div className="flex items-center justify-between"><p className="text-sm text-[#54766a]">{label}</p><Icon className="text-[#c45c3d]" size={18} strokeWidth={1.8} /></div><p className="mt-5 text-3xl font-semibold tracking-tight">{value}</p><p className="mt-2 text-xs text-[#7b968b]">{detail}</p></article>)}</section><section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]"><article className="border border-[#d6dfda] bg-white"><div className="flex items-center justify-between border-b border-[#e8eeeb] px-6 py-5"><div><h2 className="font-semibold">Dagens aktiviteter</h2><p className="mt-1 text-sm text-[#54766a]">Oppgaver som krever oppmerksomhet.</p></div><Link className="text-xs font-semibold text-[#c45c3d]" href="/activities">Se alle</Link></div>{data.activities.length === 0 ? <div className="flex min-h-64 items-center justify-center px-6 text-center"><div><Activity className="mx-auto text-[#b9ccc4]" size={28} strokeWidth={1.5} /><p className="mt-4 text-sm font-medium">Ingen aktiviteter i dag</p><p className="mt-1 text-sm text-[#7b968b]">Opprett en aktivitet for å holde neste steg synlig.</p></div></div> : <div className="divide-y divide-[#eef3f0]">{data.activities.map((activity) => <Link className="flex items-center justify-between gap-4 px-6 py-4 hover:bg-[#fbfcfb]" href="/activities" key={activity.id}><div><p className="text-sm font-medium">{activity.title}</p><p className="mt-1 text-xs text-[#7b968b]">{activity.customer?.company_name ?? "Uten kunde"}</p></div><span className="text-xs text-[#54766a]">{activity.priority === "high" ? "Høy" : "I dag"}</span></Link>)}</div>}</article><article className="border border-[#d6dfda] bg-white"><div className="flex items-center justify-between border-b border-[#e8eeeb] px-6 py-5"><div><h2 className="font-semibold">Pipeline</h2><p className="mt-1 text-sm text-[#54766a]">Største åpne muligheter.</p></div><Link className="text-xs font-semibold text-[#c45c3d]" href="/pipeline">Se alle</Link></div>{data.opportunities.length === 0 ? <div className="flex min-h-64 items-center justify-center px-6 text-center"><div><CircleDollarSign className="mx-auto text-[#b9ccc4]" size={28} strokeWidth={1.5} /><p className="mt-4 text-sm font-medium">Pipeline er tom</p><p className="mt-1 text-sm text-[#7b968b]">Muligheter vises her når de er opprettet.</p></div></div> : <div className="divide-y divide-[#eef3f0]">{data.opportunities.slice(0, 4).map((opportunity) => <Link className="block px-6 py-4 hover:bg-[#fbfcfb]" href="/pipeline" key={opportunity.id}><div className="flex justify-between gap-3"><p className="truncate text-sm font-medium">{opportunity.title}</p><p className="shrink-0 text-sm font-semibold">{money(Number(opportunity.value))}</p></div><p className="mt-1 text-xs text-[#7b968b]">{opportunity.customer?.company_name ?? "Ukjent kunde"} · {opportunity.probability}% sannsynlighet</p></Link>)}</div>}</article></section></div>;
 }
