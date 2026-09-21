@@ -16,10 +16,11 @@ const navigation = [
   { href: "/reports", label: "Rapporter", icon: BarChart3 },
 ];
 
-export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
+export function AppShell({ children, displayName, email }: Readonly<{ children: React.ReactNode; displayName: string; email: string }>) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BR";
 
   async function signOut() {
     setIsSigningOut(true);
@@ -54,7 +55,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         <header className="flex h-16 items-center justify-between border-b border-[#d6dfda] bg-white px-6 lg:px-10">
           <Link className="text-lg font-semibold tracking-tight lg:hidden" href="/dashboard">Nordlys</Link>
           <p className="hidden text-sm text-[#54766a] lg:block">Mandag, 21. september 2026</p>
-          <div className="flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center bg-[#e3ece8] text-xs font-semibold text-[#31554a]">AE</span><span className="hidden text-sm font-medium sm:block">Anders Ek</span></div>
+          <div className="flex items-center gap-3"><span aria-label={`Profil for ${displayName}`} className="flex h-8 w-8 items-center justify-center bg-[#e3ece8] text-xs font-semibold text-[#31554a]">{initials}</span><span className="hidden text-sm font-medium sm:block" title={email}>{displayName}</span></div>
         </header>
         <main className="flex-1 px-6 py-8 lg:px-10">{children}</main>
       </div>
