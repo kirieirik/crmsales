@@ -12,6 +12,7 @@
 - [x] Lead list and creation
 - [x] Lead conversion into customer, contact, and opportunity
 - [x] Pipeline list and opportunity creation
+- [x] Activity list, creation, and completion
 - [ ] Opportunity detail and drag-and-drop board
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion

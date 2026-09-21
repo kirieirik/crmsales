@@ -19,6 +19,7 @@ Nordlys CRM is a focused CRM and sales workspace for Norwegian B2B companies sel
 - Lead list and creation workflow
 - Atomic lead conversion into customer, contact, and opportunity
 - Pipeline list, opportunity creation, weighted value, and stage changes
+- Activity list, due-date tracking, and completion
 
 **In progress:**
 
