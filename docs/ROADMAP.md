@@ -6,7 +6,8 @@
 - [x] Initial relational schema and RLS design
 - [ ] Authentication and protected shell
 - [ ] Dashboard
-- [ ] Customers and contacts
+- [x] Customer list and creation
+- [ ] Customer detail and contacts
 - [ ] Leads and conversion
 - [ ] Opportunities and pipeline
 - [ ] Activities and timeline

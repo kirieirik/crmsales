@@ -13,10 +13,11 @@ Nordlys CRM is a focused CRM and sales workspace for Norwegian B2B companies sel
 - Initial weighted-pipeline and overdue-activity domain functions with unit tests
 - Norwegian Phase 0 workspace entry screen
 - Supabase browser/server clients, session proxy, login, and protected dashboard shell
+- Customer list and creation workflow with server-side validation and RLS-safe writes
 
 **In progress:**
 
-- Customer and contact management
+- Customer detail pages, contacts, and customer editing
 
 **Planned:**
 

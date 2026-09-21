@@ -1,0 +1,93 @@
+import { z } from "zod";
+
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export const customerFormSchema = z.object({
+  companyName: z.string().trim().min(2, "Skriv inn et kundenavn."),
+  organizationNumber: z.string().trim().max(32).optional(),
+  email: z.string().trim().email("Skriv inn en gyldig e-postadresse.").optional().or(z.literal("")),
+  phone: z.string().trim().max(32).optional(),
+  city: z.string().trim().max(100).optional(),
+  industry: z.string().trim().max(100).optional(),
+  customerType: z.enum(["small_business", "medium_business", "enterprise", "public_sector", "partner"]),
+  potentialValue: z.coerce.number().min(0, "Potensial kan ikke være negativt."),
+  notes: z.string().trim().max(2000).optional(),
+});
+
+export type CustomerFormState = {
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+  success?: boolean;
+};
+
+export type CustomerListItem = {
+  id: string;
+  company_name: string;
+  city: string | null;
+  industry: string | null;
+  customer_status: string;
+  customer_type: string;
+  potential_value: number | string;
+  created_at: string;
+};
+
+export async function listCustomers(): Promise<CustomerListItem[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, company_name, city, industry, customer_status, customer_type, potential_value, created_at")
+    .order("company_name", { ascending: true });
+
+  if (error) {
+    throw new Error("Kundene kunne ikke hentes.");
+  }
+
+  return (data ?? []) as CustomerListItem[];
+}
+
+export async function createCustomer(input: unknown): Promise<CustomerFormState> {
+  const parsed = customerFormSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Du må være logget inn for å opprette en kunde." };
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("organization_id")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { error: "Brukerprofilen din mangler en organisasjonstilknytning." };
+  }
+
+  const { error } = await supabase.from("customers").insert({
+    organization_id: profile.organization_id,
+    owner_id: user.id,
+    company_name: parsed.data.companyName,
+    organization_number: parsed.data.organizationNumber || null,
+    email: parsed.data.email || null,
+    phone: parsed.data.phone || null,
+    city: parsed.data.city || null,
+    industry: parsed.data.industry || null,
+    customer_type: parsed.data.customerType,
+    potential_value: parsed.data.potentialValue,
+    notes: parsed.data.notes || null,
+  });
+
+  if (error) {
+    return { error: "Kunden kunne ikke opprettes. Prøv igjen." };
+  }
+
+  return { success: true };
+}
