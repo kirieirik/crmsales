@@ -14,6 +14,7 @@
 - [x] Pipeline list and opportunity creation
 - [x] Activity list, creation, and completion
 - [x] Data-backed dashboard KPIs and summaries
+- [x] Initial sales reports
 - [ ] Opportunity detail and drag-and-drop board
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
