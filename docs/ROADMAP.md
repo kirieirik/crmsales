@@ -11,6 +11,8 @@
 - [x] Enhetsregisteret lookup for customer creation
 - [x] Lead list and creation
 - [x] Lead conversion into customer, contact, and opportunity
+- [x] Pipeline list and opportunity creation
+- [ ] Opportunity detail and drag-and-drop board
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
 - [ ] Opportunities and pipeline
