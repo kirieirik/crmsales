@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 
+import { CompanySearchField, type RegistryCompany } from "@/components/brreg/company-search-field";
 import type { LeadFormState } from "@/lib/data-access/leads";
 
 const initialState: LeadFormState = {};
@@ -11,6 +12,11 @@ export function LeadForm({ action }: Readonly<{ action: LeadFormAction }>) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
+  function selectCompany(company: RegistryCompany) {
+    const field = formRef.current?.elements.namedItem("companyName") as HTMLInputElement | null;
+    if (field) field.value = company.companyName;
+  }
+
   useEffect(() => {
     if (state.success) formRef.current?.reset();
   }, [state.success]);
@@ -18,7 +24,7 @@ export function LeadForm({ action }: Readonly<{ action: LeadFormAction }>) {
   return (
     <form action={formAction} className="space-y-5" ref={formRef}>
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="text-sm font-medium sm:col-span-2">Firmanavn<input className="mt-2 h-11 w-full border border-[#c8d5cf] px-3 font-normal outline-none focus:border-[#c45c3d]" name="companyName" required />{state.fieldErrors?.companyName ? <span className="mt-1 block text-xs font-normal text-[#a63e2a]">{state.fieldErrors.companyName[0]}</span> : null}</label>
+        <label className="text-sm font-medium sm:col-span-2">Firmanavn<CompanySearchField onSelect={selectCompany} />{state.fieldErrors?.companyName ? <span className="mt-1 block text-xs font-normal text-[#a63e2a]">{state.fieldErrors.companyName[0]}</span> : null}</label>
         <label className="text-sm font-medium">Kontaktperson<input className="mt-2 h-11 w-full border border-[#c8d5cf] px-3 font-normal outline-none focus:border-[#c45c3d]" name="contactName" /></label>
         <label className="text-sm font-medium">Kilde<select className="mt-2 h-11 w-full border border-[#c8d5cf] px-3 font-normal outline-none focus:border-[#c45c3d]" defaultValue="website" name="source"><option value="website">Nettside</option><option value="referral">Anbefaling</option><option value="cold_outreach">Kaldt salg</option><option value="existing_customer">Eksisterende kunde</option><option value="trade_show">Messe</option><option value="linkedin">LinkedIn</option><option value="other">Annet</option></select></label>
         <label className="text-sm font-medium">E-post<input className="mt-2 h-11 w-full border border-[#c8d5cf] px-3 font-normal outline-none focus:border-[#c45c3d]" name="email" type="email" />{state.fieldErrors?.email ? <span className="mt-1 block text-xs font-normal text-[#a63e2a]">{state.fieldErrors.email[0]}</span> : null}</label>
