@@ -30,7 +30,7 @@ The service-role key is not required for the current app. Leave `SUPABASE_SERVIC
 
 ### Dashboard SQL Editor
 
-For the first setup, run `0001_crm_foundation.sql` and then `0002_lead_conversion.sql` from **SQL Editor > New query**. The first migration creates the tables, indexes, constraints, RLS policies, and Auth trigger. The second adds atomic lead conversion into a customer, contact, and opportunity.
+For the first setup, run `0001_crm_foundation.sql`, `0002_lead_conversion.sql`, and then `0003_team_memberships.sql` from **SQL Editor > New query**. The first migration creates the tables, indexes, constraints, RLS policies, and Auth trigger. The second adds atomic lead conversion. The third makes invited users join the inviter's existing organization.
 
 ### Supabase CLI
 
@@ -62,6 +62,10 @@ npm run dev
 ```
 
 The login page should show the sign-in form rather than the configuration warning. After signing in, `/dashboard` should load. If the migration has not run, authentication may succeed but the protected application will not have a profile to authorize data queries.
+
+## Team invitations
+
+Add `SUPABASE_SERVICE_ROLE_KEY` as a server-only environment variable in Vercel and `.env.local`. Never prefix it with `NEXT_PUBLIC_`. An administrator can then open **Innstillinger > Team**, enter a colleague's name and email, and send an invitation. The invited user joins the existing organization as a `sales` user and can see the same customers, leads, opportunities, and activities.
 
 ## Security checklist
 

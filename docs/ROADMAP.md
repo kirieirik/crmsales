@@ -15,6 +15,7 @@
 - [x] Activity list, creation, and completion
 - [x] Data-backed dashboard KPIs and summaries
 - [x] Initial sales reports
+- [x] Team invitations and shared organization visibility
 - [ ] Opportunity detail and drag-and-drop board
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
