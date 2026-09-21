@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, CheckSquare, ChevronRight, CircleDollarSign, LayoutDashboard, LogOut, Settings, Users, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
@@ -34,8 +35,7 @@ export function AppShell({ children, displayName, email }: Readonly<{ children: 
     <div className="flex min-h-screen bg-[#f5f7f6] text-[#19332d]">
       <aside className="hidden w-64 shrink-0 border-r border-[#d6dfda] bg-[#19332d] text-white lg:flex lg:flex-col">
         <div className="border-b border-white/10 px-6 py-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b9ccc4]">Arbeidsflate</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight">Nordlys</p>
+          <Image alt="Jarlsberg" className="h-auto w-40 invert" height={38} src="/JarlsbergBlack.svg" width={180} />
         </div>
         <nav aria-label="Hovednavigasjon" className="flex-1 px-3 py-5">
           <p className="px-3 pb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8eada1]">Salg</p>
@@ -53,7 +53,7 @@ export function AppShell({ children, displayName, email }: Readonly<{ children: 
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 items-center justify-between border-b border-[#d6dfda] bg-white px-6 lg:px-10">
-          <Link className="text-lg font-semibold tracking-tight lg:hidden" href="/dashboard">Nordlys</Link>
+          <Link className="lg:hidden" href="/dashboard"><Image alt="Jarlsberg" height={28} src="/JarlsbergBlack.svg" width={132} /></Link>
           <p className="hidden text-sm text-[#54766a] lg:block">Mandag, 21. september 2026</p>
           <div className="flex items-center gap-3"><span aria-label={`Profil for ${displayName}`} className="flex h-8 w-8 items-center justify-center bg-[#e3ece8] text-xs font-semibold text-[#31554a]">{initials}</span><span className="hidden text-sm font-medium sm:block" title={email}>{displayName}</span></div>
         </header>
