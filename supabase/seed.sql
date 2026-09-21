@@ -1,0 +1,2 @@
+-- Fictional Norwegian development data will be added with Phase 1 seed tooling.
+-- Keep production credentials and real customer data out of this file.
