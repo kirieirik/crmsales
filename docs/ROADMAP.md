@@ -8,6 +8,7 @@
 - [ ] Dashboard
 - [x] Customer list and creation
 - [x] Customer detail and contacts
+- [x] Enhetsregisteret lookup for customer creation
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
 - [ ] Opportunities and pipeline
