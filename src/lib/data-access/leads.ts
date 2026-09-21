@@ -18,6 +18,11 @@ export type LeadFormState = {
   success?: boolean;
 };
 
+export type LeadConversionState = LeadFormState & {
+  customerId?: string;
+  opportunityId?: string;
+};
+
 export type LeadListItem = {
   id: string;
   company_name: string;
@@ -70,4 +75,15 @@ export async function createLead(input: unknown): Promise<LeadFormState> {
   });
 
   return error ? { error: "Leadet kunne ikke opprettes. Prøv igjen." } : { success: true };
+}
+
+export async function convertLead(leadId: string): Promise<LeadConversionState> {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Du må være logget inn for å konvertere et lead." };
+
+  const { data, error } = await supabase.rpc("convert_lead", { target_lead_id: leadId });
+  if (error || !data?.[0]) return { error: "Leadet kunne ikke konverteres. Kontroller at migrasjon 0002 er kjørt." };
+
+  return { success: true, customerId: data[0].customer_id, opportunityId: data[0].opportunity_id };
 }

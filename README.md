@@ -17,10 +17,11 @@ Nordlys CRM is a focused CRM and sales workspace for Norwegian B2B companies sel
 - Customer detail pages and contact creation
 - Enhetsregisteret company search for customer form population
 - Lead list and creation workflow
+- Atomic lead conversion into customer, contact, and opportunity
 
 **In progress:**
 
-- Lead conversion, customer editing, and customer activity timeline
+- Customer editing and customer activity timeline
 
 **Planned:**
 
@@ -118,7 +119,7 @@ Create a Vercel project connected to this repository, configure the environment 
 1. Complete Supabase browser/server clients and Auth.
 2. Build protected shell and Norwegian navigation.
 3. Implement customer/contact repository, validation, and screens.
-4. Implement lead conversion with duplicate detection.
+4. Add lead conversion duplicate detection and review workflow.
 5. Implement opportunity pipeline and centralized calculations.
 6. Implement activities, timelines, dashboard, and reports.
 7. Add realistic fictional seed data and CSV preview/import.

@@ -30,7 +30,7 @@ The service-role key is not required for the current app. Leave `SUPABASE_SERVIC
 
 ### Dashboard SQL Editor
 
-For the first setup, open **SQL Editor > New query**, paste the contents of `supabase/migrations/0001_crm_foundation.sql`, and run it once. The migration creates the tables, indexes, constraints, RLS policies, and an Auth trigger that creates a workspace/profile for every new user.
+For the first setup, run `0001_crm_foundation.sql` and then `0002_lead_conversion.sql` from **SQL Editor > New query**. The first migration creates the tables, indexes, constraints, RLS policies, and Auth trigger. The second adds atomic lead conversion into a customer, contact, and opportunity.
 
 ### Supabase CLI
 

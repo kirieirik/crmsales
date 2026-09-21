@@ -2,7 +2,7 @@
 
 ## Current migration
 
-`supabase/migrations/0001_crm_foundation.sql` is the initial schema. Apply migrations through the Supabase CLI in order; do not create production tables manually in the dashboard.
+`supabase/migrations/0001_crm_foundation.sql` is the initial schema. `0002_lead_conversion.sql` adds conversion links and the atomic conversion function. Apply migrations through the Supabase CLI or SQL editor in order; do not create production tables manually in the dashboard.
 
 ## Tables
 
@@ -13,6 +13,8 @@
 - `leads`: pre-customer sales signals and conversion link.
 - `opportunities`: pipeline deals, value, probability, stage, and close date.
 - `activities`: planned and completed customer or opportunity work.
+
+Lead conversion runs inside `public.convert_lead`, which creates a customer, optional contact, and opportunity in one transaction, then marks the original lead as converted with links to the created records.
 
 ## Integrity and money
 

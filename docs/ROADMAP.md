@@ -10,7 +10,7 @@
 - [x] Customer detail and contacts
 - [x] Enhetsregisteret lookup for customer creation
 - [x] Lead list and creation
-- [ ] Lead conversion into customer, contact, and opportunity
+- [x] Lead conversion into customer, contact, and opportunity
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion
 - [ ] Opportunities and pipeline
