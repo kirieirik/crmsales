@@ -139,6 +139,27 @@ export async function createCustomer(input: unknown): Promise<CustomerFormState>
   return { success: true };
 }
 
+export async function archiveCustomer(customerId: string): Promise<CustomerFormState> {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Du må være logget inn." };
+
+  const { error: customerError } = await supabase
+    .from("customers")
+    .update({ customer_status: "lost" })
+    .eq("id", customerId);
+
+  if (customerError) return { error: "Kunden kunne ikke avsluttes." };
+
+  const { error: opportunityError } = await supabase
+    .from("opportunities")
+    .update({ stage: "lost", lost_reason: "Kunde avsluttet" })
+    .eq("customer_id", customerId)
+    .not("stage", "in", "(won,lost)");
+
+  return opportunityError ? { error: "Kunden ble avsluttet, men åpne muligheter kunne ikke oppdateres." } : { success: true };
+}
+
 const contactFormSchema = z.object({
   firstName: z.string().trim().min(1, "Skriv inn fornavn."),
   lastName: z.string().trim().min(1, "Skriv inn etternavn."),

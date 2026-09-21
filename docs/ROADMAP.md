@@ -16,6 +16,7 @@
 - [x] Data-backed dashboard KPIs and summaries
 - [x] Initial sales reports
 - [x] Team invitations and shared organization visibility
+- [x] Non-destructive customer archiving
 - [ ] Opportunity detail and drag-and-drop board
 - [ ] Customer editing and activity timeline
 - [ ] Leads and conversion

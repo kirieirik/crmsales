@@ -3,7 +3,9 @@ import { ArrowLeft, Building2, Mail, MapPin, Phone, UserRound } from "lucide-rea
 import { notFound } from "next/navigation";
 
 import { ContactForm } from "@/components/customers/contact-form";
+import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { getCustomerDetail } from "@/lib/data-access/customers";
+import { archiveCustomerAction } from "../actions";
 import { createContactAction } from "./actions";
 
 const statusLabels: Record<string, string> = { prospect: "Prospekt", active: "Aktiv", inactive: "Inaktiv", lost: "Tapt" };
@@ -18,7 +20,7 @@ export default async function CustomerDetailPage({ params }: Readonly<{ params: 
   return (
     <div className="mx-auto max-w-7xl">
       <Link className="inline-flex items-center gap-2 text-sm text-[#54766a] hover:text-[#19332d]" href="/customers"><ArrowLeft size={16} />Tilbake til kunder</Link>
-      <header className="mt-6 flex flex-col justify-between gap-5 border-b border-[#d6dfda] pb-7 sm:flex-row sm:items-end"><div><p className="text-sm font-medium text-[#c45c3d]">Kundedetalj</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">{customer.company_name}</h1><p className="mt-2 text-sm text-[#54766a]">{[customer.industry, customer.city].filter(Boolean).join(" · ") || "Ingen tilleggsinformasjon"}</p></div><span className="w-fit bg-[#e3ece8] px-3 py-1 text-xs font-medium text-[#31554a]">{statusLabels[customer.customer_status] ?? customer.customer_status}</span></header>
+      <header className="mt-6 flex flex-col justify-between gap-5 border-b border-[#d6dfda] pb-7 sm:flex-row sm:items-end"><div><p className="text-sm font-medium text-[#c45c3d]">Kundedetalj</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">{customer.company_name}</h1><p className="mt-2 text-sm text-[#54766a]">{[customer.industry, customer.city].filter(Boolean).join(" · ") || "Ingen tilleggsinformasjon"}</p></div><div className="flex items-center gap-3"><span className="w-fit bg-[#e3ece8] px-3 py-1 text-xs font-medium text-[#31554a]">{statusLabels[customer.customer_status] ?? customer.customer_status}</span>{customer.customer_status !== "lost" ? <ArchiveCustomerButton action={archiveCustomerAction} customerId={customer.id} /> : null}</div></header>
       <div className="grid gap-6 py-7 lg:grid-cols-[0.8fr_1.2fr]">
         <div className="space-y-6">
           <section className="border border-[#d6dfda] bg-white p-6"><h2 className="font-semibold">Firmaopplysninger</h2><dl className="mt-5 space-y-4 text-sm"><div className="flex gap-3"><Building2 className="shrink-0 text-[#c45c3d]" size={17} /><div><dt className="text-xs text-[#7b968b]">Kundetype</dt><dd className="mt-1">{typeLabels[customer.customer_type] ?? customer.customer_type}</dd></div></div><div className="flex gap-3"><MapPin className="shrink-0 text-[#c45c3d]" size={17} /><div><dt className="text-xs text-[#7b968b]">Poststed</dt><dd className="mt-1">{customer.city || "Ikke registrert"}</dd></div></div><div className="flex gap-3"><Phone className="shrink-0 text-[#c45c3d]" size={17} /><div><dt className="text-xs text-[#7b968b]">Telefon</dt><dd className="mt-1">{customer.phone || "Ikke registrert"}</dd></div></div><div className="flex gap-3"><Mail className="shrink-0 text-[#c45c3d]" size={17} /><div><dt className="text-xs text-[#7b968b]">E-post</dt><dd className="mt-1">{customer.email || "Ikke registrert"}</dd></div></div></dl></section>
